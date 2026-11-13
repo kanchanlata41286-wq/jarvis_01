@@ -1,0 +1,27 @@
+# Local runtime and generated files for the app itself
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.venv/
+venv/
+
+# Sensitive runtime data
+config/
+config/**
+memory/
+memory/**
+uploads/
+uploads/**
+*.key
+*.crt
+*.pem
+*.log
+*.running
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
