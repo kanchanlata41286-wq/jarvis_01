@@ -1,7 +1,0 @@
-# Secrets - personal API key never goes to GitHub
-Mark-LVI-main/config/api_keys.json
-
-# Runtime / cache junk
-__pycache__/
-*.pyc
-*.running
