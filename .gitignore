@@ -1,41 +1,7 @@
-# === SECRETS — committing these publishes them ===
-**/api_keys.json
-**/config/certs/
-**/token*.json
-**/client_secret*.json
-*credentials*.json
-.env
-.env.*
+# Secrets - personal API key never goes to GitHub
+Mark-LVI-main/config/api_keys.json
 
-# === personal data the assistant accumulates ===
-**/memory/long_term.json
-**/memory/*.db
-
-# === python build noise ===
+# Runtime / cache junk
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
-build/
-dist/
-*.egg-info/
-.eggs/
-.venv/
-venv/
-env/
-ENV/
-
-# === runtime output ===
-*.log
-logs/
-downloads/
-screenshots/
-MARK_LVI.running
-
-# === editors / OS ===
-.vscode/
-.idea/
-*.swp
-.DS_Store
-Thumbs.db
-desktop.ini
+*.pyc
+*.running
