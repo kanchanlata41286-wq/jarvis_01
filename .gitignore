@@ -1,0 +1,41 @@
+# === SECRETS — committing these publishes them ===
+**/api_keys.json
+**/config/certs/
+**/token*.json
+**/client_secret*.json
+*credentials*.json
+.env
+.env.*
+
+# === personal data the assistant accumulates ===
+**/memory/long_term.json
+**/memory/*.db
+
+# === python build noise ===
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+build/
+dist/
+*.egg-info/
+.eggs/
+.venv/
+venv/
+env/
+ENV/
+
+# === runtime output ===
+*.log
+logs/
+downloads/
+screenshots/
+MARK_LVI.running
+
+# === editors / OS ===
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
