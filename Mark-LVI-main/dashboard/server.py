@@ -83,7 +83,7 @@ def _get_gemini_key() -> str | None:
 _KEY_CHARS = [c for c in (string.ascii_uppercase + string.digits)
               if c not in ('O', 'I', 'L', '0', '1')]
 
-# ── AES-256-CBC ───────────────────────────────────────────────────────────────
+# ── AES-256-CBC ──────────────────────────────────────────────────────────
 _AES_SALT = b'JARVIS-DASHBOARD-v1'
 
 
@@ -255,7 +255,7 @@ def _ensure_network_access(*ports: int) -> None:
     """
     import sys, subprocess, os, tempfile, threading
 
-    # ── Windows ──────────────────────────────────────────────────────────────
+    # ── Windows ──────────────────────────────────────────────────────────
     if sys.platform == "win32":
         import ctypes, time
 
@@ -378,7 +378,7 @@ def _ensure_network_access(*ports: int) -> None:
         bat_body = "\r\n".join(bat_lines) + "\r\n"
         fd, bat_path = tempfile.mkstemp(suffix=".bat", prefix="jarvis_fw_")
         try:
-            os.write(fd, bat_body.encode("mbcs"))   # Windows cmd.exe expects ANSI
+            os.write(fd, bat_body.encode("mbcs"))  # Windows cmd.exe expects ANSI
             os.close(fd)
         except Exception:
             try:
@@ -461,7 +461,7 @@ def _ensure_network_access(*ports: int) -> None:
             threading.Thread(target=_cleanup, args=(bat_path,), daemon=True).start()
         return
 
-    # ── macOS ─────────────────────────────────────────────────────────────────
+    # ── macOS ──────────────────────────────────────────────────────────
     if sys.platform == "darwin":
         fw_ctl = "/usr/libexec/ApplicationFirewall/socketfilterfw"
         try:
@@ -489,57 +489,60 @@ def _ensure_network_access(*ports: int) -> None:
             pass  # macOS firewall is off by default — silent failure is fine
         return
 
-    # ── Linux ─────────────────────────────────────────────────────────────────
-    def _privileged(cmd: list[str]) -> bool:
-        for prefix in (["pkexec"], ["sudo", "-n"]):
-            try:
-                r = subprocess.run(prefix + cmd, capture_output=True, timeout=30)
-                if r.returncode == 0:
-                    return True
-            except Exception:
+    # ── Linux ──────────────────────────────────────────────────────────
+    if sys.platform == "linux":
+        def _open_linux_port(port: int) -> None:
+            def _privileged(cmd: list[str]) -> bool:
+                for prefix in (["pkexec"], ["sudo", "-n"]):
+                    try:
+                        r = subprocess.run(prefix + cmd, capture_output=True, timeout=30)
+                        if r.returncode == 0:
+                            return True
+                    except Exception:
+                        pass
+                return False
+
+            try:  # ufw
+                r = subprocess.run(["ufw", "status"], capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=5)
+                if "active" in r.stdout.lower():
+                    if _privileged(["ufw", "allow", f"{port}/tcp"]):
+                        print(f"[Dashboard] ufw: port {port} allowed.")
+                    else:
+                        print(f"[Dashboard] Run manually:  sudo ufw allow {port}/tcp")
+                    return
+            except FileNotFoundError:
                 pass
-        return False
 
-    try:  # ufw
-        r = subprocess.run(["ufw", "status"], capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=5)
-        if "active" in r.stdout.lower():
-            if _privileged(["ufw", "allow", f"{port}/tcp"]):
-                print(f"[Dashboard] ufw: port {port} allowed.")
-            else:
-                print(f"[Dashboard] Run manually:  sudo ufw allow {port}/tcp")
-            return
-    except FileNotFoundError:
-        pass
+            try:  # firewalld
+                r = subprocess.run(["firewall-cmd", "--state"], capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=5)
+                if "running" in r.stdout.lower():
+                    ok = (_privileged(["firewall-cmd", "--add-port", f"{port}/tcp", "--permanent"])
+                          and _privileged(["firewall-cmd", "--reload"]))
+                    if ok:
+                        print(f"[Dashboard] firewalld: port {port} allowed.")
+                    else:
+                        print(f"[Dashboard] Run manually:  sudo firewall-cmd --add-port={port}/tcp --permanent && sudo firewall-cmd --reload")
+                    return
+            except FileNotFoundError:
+                pass
 
-    try:  # firewalld
-        r = subprocess.run(
-            ["firewall-cmd", "--state"], capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=5,
-        )
-        if "running" in r.stdout.lower():
-            ok = (_privileged(["firewall-cmd", "--add-port", f"{port}/tcp", "--permanent"])
-                  and _privileged(["firewall-cmd", "--reload"]))
-            if ok:
-                print(f"[Dashboard] firewalld: port {port} allowed.")
-            else:
-                print(f"[Dashboard] Run manually:  sudo firewall-cmd --add-port={port}/tcp --permanent && sudo firewall-cmd --reload")
-            return
-    except FileNotFoundError:
-        pass
+            try:  # iptables (not persistent but works until reboot)
+                r = subprocess.run(["iptables", "-L", "INPUT", "-n"], capture_output=True, timeout=5)
+                if r.returncode == 0:
+                    if _privileged(["iptables", "-A", "INPUT", "-p", "tcp", "--dport", str(port), "-j", "ACCEPT"]):
+                        print(f"[Dashboard] iptables: port {port} opened.")
+                    else:
+                        print(f"[Dashboard] Run manually:  sudo iptables -A INPUT -p tcp --dport {port} -j ACCEPT")
+            except FileNotFoundError:
+                pass  # no iptables means firewall is probably off — nothing to do
 
-    try:  # iptables (not persistent but works until reboot)
-        r = subprocess.run(["iptables", "-L", "INPUT", "-n"], capture_output=True, timeout=5)
-        if r.returncode == 0:
-            if _privileged(["iptables", "-A", "INPUT", "-p", "tcp", "--dport", str(port), "-j", "ACCEPT"]):
-                print(f"[Dashboard] iptables: port {port} opened.")
-            else:
-                print(f"[Dashboard] Run manually:  sudo iptables -A INPUT -p tcp --dport {port} -j ACCEPT")
-    except FileNotFoundError:
-        pass  # no iptables means firewall is probably off — nothing to do
+        for port in sorted({int(p) for p in ports}):
+            _open_linux_port(port)
+        return
 
 
+# ── helpers ───────────────────────────────────────────────────────────────
 
-
-# ── helpers ───────────────────────────────────────────────────────────────────
 
 def _local_ip() -> str:
     """Return the best LAN-facing IPv4 address, no internet required."""
@@ -667,7 +670,7 @@ def _read(name: str) -> str:
     return (STATIC_DIR / name).read_text(encoding="utf-8")
 
 
-# ── DashboardServer ───────────────────────────────────────────────────────────
+# ── DashboardServer ─────────────────���──────────────────────────────────────
 
 # How long an auth token stays valid, and how many failed logins an address
 # gets before it has to wait.
@@ -1185,7 +1188,7 @@ class DashboardServer:
 
         return app
 
-    # ── serve ─────────────────────────────────────────────────────────────
+    # ── serve ──────────────────────────────────────────────────────────
 
     async def _serve_redirector(self) -> None:
         """A plain-HTTP listener whose only job is to send people to HTTPS.
