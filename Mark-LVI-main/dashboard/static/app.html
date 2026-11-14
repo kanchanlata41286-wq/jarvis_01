@@ -130,9 +130,21 @@
       pointer-events:none; white-space:nowrap;
     }
     #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+    /* ── HTTP WARNING BANNER ── */
+    #http-warning {
+      display: none; width: 100%; padding: 8px 16px;
+      background: rgba(234,179,8,0.14); border-bottom: 1px solid rgba(234,179,8,0.35);
+      color: #eab308; font-size: 12px; font-weight: 600; letter-spacing: 0.3px;
+      text-align: center; flex-shrink: 0;
+    }
   </style>
 </head>
 <body>
+  <div id="http-warning">
+    ⚠️ Dashboard is running over HTTP. Commands are not encrypted on your local network.
+    Enable HTTPS: set "dashboard_https": true in config/api_keys.json
+  </div>
   <div id="toast"></div>
   <header>
     <div class="logo"><em>J</em>ARVIS</div>
@@ -152,6 +164,11 @@
   </footer>
 
   <script>
+    // ── HTTP warning banner ────────────────────────────────────────────────────
+    if (window.location.protocol === 'http:') {
+      document.getElementById('http-warning').style.display = 'block';
+    }
+
     // ── Auth — bearer token ───────────────────────────────────────────────────
     const _authToken  = sessionStorage.getItem('jarvis_token');
     const _sessionKey = sessionStorage.getItem('jarvis_key');

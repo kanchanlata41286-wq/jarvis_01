@@ -533,9 +533,15 @@ It is held in memory only, deliberately: writing it to disk would make a fresh l
 ## ⚡ Quick Start
 
 ```bash
-git clone https://github.com/FatihMakes/Mark-LVI.git
-cd Mark-LVI
-python setup.py        # installs deps for YOUR OS + the browser automation engine
+git clone https://github.com/kanchanlata41286-wq/jarvis_01.git
+cd jarvis_01
+
+# Option A (Recommended): Use the unified launcher from repo root
+python start.py
+
+# Option B: Run from the application directory directly
+cd Mark-LVI-main
+python setup.py        # installs deps for YOUR OS + browser automation
 python main.py
 ```
 

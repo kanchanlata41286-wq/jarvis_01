@@ -1,0 +1,77 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# IDE & Editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Project runtime locks & artifacts
+MARK_LVI.running
+*.running
+*.log
+
+# Sensitive credentials, API keys & certificates
+config/api_keys.json
+**/config/api_keys.json
+config/certs/
+**/config/certs/
+*.key
+*.crt
+*.pem
+
+# User memory & personal data (Privacy)
+memory/long_term.json
+**/memory/long_term.json
+Mark-LVI-main/memory/long_term.json
+
+# User uploads
+uploads/
+**/uploads/

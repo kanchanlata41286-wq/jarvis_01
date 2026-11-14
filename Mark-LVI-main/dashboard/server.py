@@ -504,7 +504,8 @@ def _ensure_network_access(*ports: int) -> None:
 
             try:  # ufw
                 r = subprocess.run(["ufw", "status"], capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=5)
-                if "active" in r.stdout.lower():
+                out = r.stdout.lower()
+                if "status: active" in out or ("active" in out and "inactive" not in out):
                     if _privileged(["ufw", "allow", f"{port}/tcp"]):
                         print(f"[Dashboard] ufw: port {port} allowed.")
                     else:
@@ -515,7 +516,8 @@ def _ensure_network_access(*ports: int) -> None:
 
             try:  # firewalld
                 r = subprocess.run(["firewall-cmd", "--state"], capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=5)
-                if "running" in r.stdout.lower():
+                out = r.stdout.lower()
+                if r.returncode == 0 and "not running" not in out and "running" in out:
                     ok = (_privileged(["firewall-cmd", "--add-port", f"{port}/tcp", "--permanent"])
                           and _privileged(["firewall-cmd", "--reload"]))
                     if ok:

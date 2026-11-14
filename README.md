@@ -131,41 +131,48 @@ On first launch, a setup screen appears:
 ## 📂 Project Structure
 
 ```
-Mark-LVI-main/
-│   start.py              ← Launcher (self-test + watchdog)
-│   start.bat             ← Double-click to start
-│   requirements.txt      ← Dependencies (auto-installed)
+jarvis_01/
+├── start.py              ← Launcher (self-test + watchdog)
+├── start.bat             ← Windows one-click launcher
+├── README.md             ← Project documentation
+├── .gitignore            ← Git ignore rules
+├── .github/              ← CI/CD automated test workflows
+│   └── workflows/ci.yml
 │
-├── Mark-LVI-main/        ← The actual app
-│   ├── main.py           ← Core engine (2,400+ lines)
-│   ├── ui.py             ← HUD interface (6,600+ lines)
-│   ├── actions/          ← 21 built-in skills
-│   │   ├── open_app.py          📱 Open applications
-│   │   ├── send_message.py      💬 WhatsApp/messages
-│   │   ├── browser_control.py   🌐 Web browsing
-│   │   ├── screen_processor.py  👁️ Screen understanding
-│   │   ├── file_controller.py   📁 File management
-│   │   ├── computer_control.py  🖱️ Mouse & keyboard
-│   │   ├── web_search.py        🔍 Search engine
-│   │   ├── youtube_video.py     📺 Video playback
-│   │   ├── weather_report.py    🌤️ Weather
-│   │   ├── flight_finder.py     ✈️ Flights
-│   │   ├── reminder.py          ⏰ Reminders
-│   │   ├── code_helper.py       💻 Coding
-│   │   ├── dev_agent.py         🛠️ Dev tasks
-│   │   └── ... (12 more)
-│   ├── core/             ← Heart of the system
-│   │   ├── avatar.py           🎭 Holographic face
-│   │   ├── gemini.py           🧠 Model ladder (9 models)
-│   │   ├── wake_word.py        🎙️ "Hey Jarvis" detection
-│   │   ├── undo.py             ↩️ Action reversal
-│   │   ├── confirm.py          ⚠️ Safety gate
-│   │   └── echo.py             🔇 Self-echo guard
-│   ├── plugins/          ← Drop .py files to add skills
-│   ├── providers/        ← Optional: local AI engines
-│   ├── memory/           ← Long-term memory store
-│   ├── dashboard/        ← Phone remote control
-│   └── config/           ← Your settings (API key here)
+└── Mark-LVI-main/        ← The core application
+    ├── main.py           ← Core engine (2,400+ lines)
+    ├── ui.py             ← HUD interface (6,600+ lines)
+    ├── requirements.txt  ← Dependencies (auto-installed)
+    ├── setup.py          ← OS-specific installer
+    ├── readme.md         ← Nested Mark-LVI technical manual
+    ├── tests/            ← Unit test suite (firewall, config, actions)
+    ├── actions/          ← 21 built-in skills
+    │   ├── open_app.py          📱 Open applications
+    │   ├── send_message.py      💬 WhatsApp/messages
+    │   ├── browser_control.py   🌐 Web browsing
+    │   ├── screen_processor.py  👁️ Screen understanding
+    │   ├── file_controller.py   📁 File management
+    │   ├── computer_control.py  🖱️ Mouse & keyboard
+    │   ├── web_search.py        🔍 Search engine
+    │   ├── youtube_video.py     📺 Video playback
+    │   ├── weather_report.py    🌤️ Weather
+    │   ├── flight_finder.py     ✈️ Flights
+    │   ├── reminder.py          ⏰ Reminders
+    │   ├── code_helper.py       💻 Coding
+    │   ├── dev_agent.py         🛠️ Dev tasks
+    │   └── ... (12 more)
+    ├── core/             ← Heart of the system
+    │   ├── avatar.py           🎭 Holographic face
+    │   ├── gemini.py           🧠 Model ladder (9 models)
+    │   ├── wake_word.py        🎙️ "Hey Jarvis" detection
+    │   ├── undo.py             ↩️ Action reversal
+    │   ├── confirm.py          ⚠️ Safety gate
+    │   └── echo.py             🔇 Self-echo guard
+    ├── plugins/          ← Drop .py files to add skills
+    ├── providers/        ← Optional: local AI engines (Whisper, Piper, Ollama)
+    ├── memory/           ← Long-term memory store
+    ├── dashboard/        ← Phone remote control & web app
+    └── config/           ← Settings & configuration
 ```
 
 ---
@@ -238,12 +245,19 @@ Restart → JARVIS instantly knows the new skill. That's it.
 - 🧠 **Check memory**: ⚙ → 🧠 MEMORY — see everything it knows about you
 - 🔌 **Add skills**: Drop Python file in `plugins/` → restart → done
 - ⚡ **Faster startup**: Second launch is instant (pre-compiled)
+- 📡 **Secure Dashboard**: Set `"dashboard_https": true` in `config/api_keys.json` to encrypt phone-to-PC commands. Without it, the dashboard runs over HTTP on your local network.
 
 ---
 
-## 🤝 Credits
+## 🤝 Credits & Attribution
 
 Built on the **Mark LI–LV** foundation by **FatihMakes** — extending the JARVIS vision with a holographic avatar, real lip-sync, plugin architecture, and total digital autonomy.
+
+This repository (`jarvis_01`) is a customized distribution of the project featuring:
+- Unified root launcher (`start.py` / `start.bat`) with self-healing checks
+- Automated CI testing workflow for Python 3.11 – 3.13
+- Hardened Linux firewall management & HTTP/HTTPS dashboard warnings
+- Clean git hygiene with private memory and bytecode isolation
 
 > *"It's not just an assistant — it's an extension of your digital life."*
 
